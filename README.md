@@ -15,7 +15,9 @@ conda activate Custom_Sign_Language_env
 ### Packages
 ```bash
 pip install --upgrade pip setuptools wheel
-pip install opencv-python scikit-learn mediapipe
+pip install opencv-python
+pip install scikit-learn
+pip install mediapipe
 ```
 
 ## Deactivate an active environment
