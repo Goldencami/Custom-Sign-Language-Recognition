@@ -37,3 +37,4 @@ The main issue in this project was the data collection as the model would get co
 Future improvements may include:
 - Expanding the dataset to recognize more gestures.
 - Adding functionality to avoid displaying a label when no sign is detected.
+- When the gesture is one hand, detect it for both hands. Currently if it sees two hands it thinks it means 'hug'.
