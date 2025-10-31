@@ -37,9 +37,35 @@ pip install pandas
 conda deactivate
 ```
 
+## Development
+If you are using Visual Studio Code, make sure to have activated the environment prior to opening the project. Once it's activated and your project is open, do the following:
+1. Open the Command Palette **(Ctrl+Shift+P)**
+2. Type `Python: Select Interpreter`
+3. Look for your environment:
+   ` Python 3.11.x (Custom_Sign_Language_env) `
+
+You can now open the terminal and notice you are working in your corresponding environment
+
+### Run the project
+```bash
+python inference_classifier.py
+```
+
 ## Notes
 The main issue in this project was the data collection as the model would get confused between 'thank you' and 'sleepy' due to using one hand. Contrary to 'hug' that uses both. For the moment, the right hand is prioritized when saying 'thank you' or indicating you are 'sleepy'. While collecting the data, it is important to move the hands around and in different orientations to help the model differientiate the sign.
 
+If you want to train the model with your own custom data, you need to run the following files in order:
+```bash
+python data_collection.py
+```
+
+```bash
+python train_classifier.py
+```
+
+```bash
+python inference_classifier.py
+```
 ### Feature Improvements
 Future improvements may include:
 - Expanding the dataset to recognize more gestures.
