@@ -9,9 +9,9 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 500)
 
-mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
-hand = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.3, max_num_hands=2)
+mp_drawing = mp.solutions.drawing_utils
+hand = mp_hands.Hands(static_image_mode=False, min_detection_confidence=0.7, max_num_hands=2)
 
 # folder where we'll save the data
 DATA_DIR = './data'
@@ -40,7 +40,7 @@ for gesture in labels:
         if not ret or frame is None:
             print("Frame not received, retrying...")
             continue
-        
+
         # to create mirror effect, other wise right hand will appear on left side
         frame = cv2.flip(frame, 1)
         cv2.putText(frame, 'Press Q to start recording data...', (50, 70),
