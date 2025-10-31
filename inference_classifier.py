@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 
 model_dict = pickle.load(open('./model.p', 'rb'))
-model = model_dict['model']
+model = model_dict['model']  # extract the model from the dict
 
 # Camera number im capturing
 cap = cv2.VideoCapture(0)
@@ -21,7 +21,11 @@ if not cap.isOpened():
 
 while True:
     ret, frame = cap.read()
-    H, W,_=frame.shape
+    if not ret or frame is None:
+        print("Frame not received, retrying...")
+        continue
+
+    H, W, _ =frame.shape
     # to create mirror effect, other wise right hand will appear on left side
     frame = cv2.flip(frame, 1)
     # OpenCV captures img in BGR, mediapipe expect RGB
@@ -30,33 +34,39 @@ while True:
     result = hands.process(RGB_frame)
 
     test_data = []
-    x_ = []
-    y_ = []
+
     # check if there's a hand on screen to place landmarks
-    if result.multi_hand_landmarks:
-        # iterating through different detected hands
-        for hand_landmarks in result.multi_hand_landmarks:
-            # iterate through the landmarks of one hand (testing)
-            for point in hand_landmarks.landmark:
-                test_data.extend([point.x, point.y, point.z])
+    if result.multi_hand_landmarks and result.multi_handedness:
+        # map features to left/right hands
+        left_hand = np.full(63, -1.0)
+        right_hand = np.full(63, -1.0)
+
+        for idx, hand_landmarks in enumerate(result.multi_hand_landmarks):
+            hand_label = result.multi_handedness[idx].classification[0].label
+            wrist_x, wrist_y, wrist_z = hand_landmarks.landmark[0].x, hand_landmarks.landmark[0].y, hand_landmarks.landmark[0].z
+            coords = [(lm.x - wrist_x, lm.y - wrist_y, lm.z - wrist_z) for lm in hand_landmarks.landmark]
+            coords_flat = [c for triplet in coords for c in triplet]
+
+            if hand_label == 'Left':
+                left_hand = np.array(coords_flat)
+            else:
+                right_hand = np.array(coords_flat)
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-    # pad zeros for missing hand(s) so always 2 hands (126 features)
-    while len(test_data) < 126:
-        test_data.extend([0.0, 0.0, 0.0])
+            
+        # combine both hands for prediction
+        test_data = np.concatenate([left_hand, right_hand])
+    else:
+        # no hands detected
+        test_data = np.full(126, -1.0)
 
     # prediction is a list of only 1 element
     prediction = model.predict([np.asarray(test_data)])
+    # Draw bounding box around detected hands
+    x_ = [lm.x for hand in result.multi_hand_landmarks for lm in hand.landmark] if result.multi_hand_landmarks else []
+    y_ = [lm.y for hand in result.multi_hand_landmarks for lm in hand.landmark] if result.multi_hand_landmarks else []
 
-    if result.multi_hand_landmarks:
-        for hand_landmarks in result.multi_hand_landmarks:
-            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            for i in range(len(hand_landmarks.landmark)):
-                x = hand_landmarks.landmark[i].x
-                y = hand_landmarks.landmark[i].y
-                x_.append(x)
-                y_.append(y)
-
+    if x_ and y_:
         # trying to get the corners of the rectangle containing the hand
         x1 = int(min(x_) * W) - 10
         y1 = int(min(y_) * H) - 10

@@ -19,18 +19,19 @@ for file in os.listdir(DATA_DIR):
     gesture = file.split('.')[0] # we only want the name
     data_dir = os.path.join(DATA_DIR, file)
     df = pd.read_csv(data_dir, header=0)
-    data.append(df.values)
+    X_gesture = df.drop(columns=['label']).values  # exclude label from features
+    data.append(X_gesture)
     # there are many landmarks per gestures, classify them
-    labels.extend([gesture] * len(df))
+    labels.extend(df['label'].values)
 
 # Combine all gesture arrays
 X = np.vstack(data)
 y = np.array(labels)
 
 # stratify -> keep same proportion of all our different labels (1/3 each)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=True, stratify=y, random_state=42)
 
-model = RandomForestClassifier()
+model = RandomForestClassifier(n_estimators=200, random_state=42)
 model.fit(X_train, y_train)
 
 y_predict = model.predict(X_test)

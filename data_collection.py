@@ -23,10 +23,11 @@ header = []
 for hand_id in ['Left', 'Right']:
     for i in range(21):
         header += [f'{hand_id}_x{i}', f'{hand_id}_y{i}', f'{hand_id}_z{i}']
+header += ['label']  # add gesture label for ML
 
 # variables that contain all information
 labels = ['thank-you', 'hug', 'sleepy']
-dataset_size = 50
+dataset_size = 100
 
 if not cap.isOpened():
     print('Error: Could not open camera.')
@@ -70,15 +71,15 @@ for gesture in labels:
         result = hand.process(RGB_frame)
 
         # initialize empty vectors for both hands
-        left_hand = np.zeros(63)
-        right_hand = np.zeros(63)
+        # don't want to use 0's as it can lead to confusion for the model
+        left_hand = np.full(63, -1.0)  # -1 indicates missing hand
+        right_hand = np.full(63, -1.0)
 
         # check if there's a hand on screen to place landmarks
         # ensures at least one hand was detected and labeled
         if result.multi_hand_landmarks and result.multi_handedness:
             # loops over each detected hand
             for idx, hand_landmarks in enumerate(result.multi_hand_landmarks):
-
                 hand_label = result.multi_handedness[idx].classification[0].label  # 'Left or 'Right
                 # extracts all 63 numbers (x, y, z for each of the 21 landmarks)
                 coords = [coord for lm in hand_landmarks.landmark for coord in (lm.x, lm.y, lm.z)]
@@ -93,10 +94,11 @@ for gesture in labels:
 
             # combines both vectors
             frame_data = np.concatenate([left_hand, right_hand])
+            frame_data = frame_data.tolist() + [gesture]
             data_coor.append(frame_data)
             counter += 1
 
-        cv2.putText(frame, gesture, (50, 70),
+        cv2.putText(frame, f'{gesture} ({counter}/{dataset_size})', (50, 70),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
         cv2.imshow('Video', frame)
         # press 'e' to exit early
