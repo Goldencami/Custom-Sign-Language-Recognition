@@ -27,7 +27,7 @@ header += ['label']  # add gesture label for ML
 
 # variables that contain all information
 labels = ['thank-you', 'hug', 'sleepy']
-dataset_size = 100
+dataset_size = 200
 
 if not cap.isOpened():
     print('Error: Could not open camera.')

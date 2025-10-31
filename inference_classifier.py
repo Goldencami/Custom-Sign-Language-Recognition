@@ -34,13 +34,12 @@ while True:
     result = hands.process(RGB_frame)
 
     test_data = []
+    # map features to left/right hands
+    left_hand = np.full(63, -1.0)
+    right_hand = np.full(63, -1.0)
 
     # check if there's a hand on screen to place landmarks
     if result.multi_hand_landmarks and result.multi_handedness:
-        # map features to left/right hands
-        left_hand = np.full(63, -1.0)
-        right_hand = np.full(63, -1.0)
-
         for idx, hand_landmarks in enumerate(result.multi_hand_landmarks):
             hand_label = result.multi_handedness[idx].classification[0].label
             wrist_x, wrist_y, wrist_z = hand_landmarks.landmark[0].x, hand_landmarks.landmark[0].y, hand_landmarks.landmark[0].z
@@ -53,7 +52,7 @@ while True:
                 right_hand = np.array(coords_flat)
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            
+
         # combine both hands for prediction
         test_data = np.concatenate([left_hand, right_hand])
     else:
@@ -71,8 +70,8 @@ while True:
         x1 = int(min(x_) * W) - 10
         y1 = int(min(y_) * H) - 10
 
-        x2 = int(max(x_) * W) - 10
-        y2 = int(max(y_) * H) - 10
+        x2 = int(max(x_) * W) + 10
+        y2 = int(max(y_) * H) + 10
 
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0 ,0), 4) # colour and thickness value
         cv2.putText(frame, prediction[0], (x1, y1 - 10), cv2.FONT_HERSHEY_COMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
