@@ -18,6 +18,7 @@ pip install --upgrade pip setuptools wheel
 pip install opencv-python
 pip install scikit-learn
 pip install mediapipe
+pip install pandas
 ```
 
 ## Deactivate an active environment
