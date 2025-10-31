@@ -4,6 +4,13 @@ This project was created to honor the unique sign language developed for a deaf 
 Currently, the model can recognize three hand gestures — Thank You, Hug, and Sleepy — which are among the most commonly used signs in our family.
 The project was implemented using **OpenCV** and **MediaPipe** for hand detection and gesture recognition.
 
+## Directory
+- `data`: All the recorded landmarks of my gestures are recorded into a csv file with the gesture's name.
+- `data_collection.py`: Captures and saves my gesture's landmarks through a video capture.
+- `inference_classifier.py`: Trained ML model that can predict my hand signs.
+- `model.p`: Saved trained ML model.
+- `train_classifier.py`: Importing the data and fitting it into a Random Forest Classifier.
+
 ## Installation
 This project was created and tested on a virtual environment using Anaconda. Open Anaconda Prompt and write the following lines.
 
