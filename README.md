@@ -1,5 +1,5 @@
 # Custom-Sign-Language-Recognition
-This project was created to honor the unique sign language developed for a deaf and mute family member. When they were a child, our family invented this custom sign language to help them communicate with others. Because it is unique, only members of my family have learned and used it over the years.
+This project was created to honor the unique sign language developed for a deaf and mute family member. This custom sign language to help them communicate with others, only members of my family have learned and used it over the years.
 
 Currently, the model can recognize three hand gestures — Thank You, Hug, and Sleepy — which are among the most commonly used signs in our family.
 The project was implemented using **OpenCV** and **MediaPipe** for hand detection and gesture recognition.
